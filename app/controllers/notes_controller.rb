@@ -21,7 +21,7 @@ class NotesController < ApplicationController
     end
     
     def update
-        note = Post.find(params[:id])
+        note = Note.find(params[:id])
         
         #assigns new attributes to note  
         note.assign_attributes(note_params)

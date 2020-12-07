@@ -1,24 +1,23 @@
+require 'byebug' 
 class UsersController < ApplicationController
    
     def index
-        
+        users = User.all
+        render json: users, include: :notes 
     end
     
     def show
        user = User.find(params[:id])
-       render json: user 
+       render json: user, include: :notes
     end
     
     def create
-        user = User.create_with(profile_pic: 
-        params[:profile_pic], name: 
-        params[:name]).find_or_create_by(email: 
-        params[:email].downcase, username: params[:username]))
-
-        if user.save
-            render json: user
+        user = User.create(user_params)
+        # byebug
+        if user.valid?
+            render json: { user: UserSerializer.new(user)}, status: :created
         else
-            render json: {error: "Please enter a valid Username and Email"}, status: 403
+            render json: {error: "Please enter another Username that one isn't available."}, status: :not_acceptable
         end
     end
     
@@ -45,6 +44,6 @@ class UsersController < ApplicationController
 
     private
     def user_params
-        params.require(:user).permit(:email, :username, :profile_pic)
-
+        params.require(:user).permit( :username, :password, :profile_pic)
+    end
 end
